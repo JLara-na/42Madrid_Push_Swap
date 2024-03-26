@@ -6,7 +6,7 @@
 /*   By: jlara-na <jlara-na@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/23 19:36:00 by jlara-na          #+#    #+#             */
-/*   Updated: 2024/03/12 20:01:35 by jlara-na         ###   ########.fr       */
+/*   Updated: 2024/03/26 00:32:59 by jlara-na         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@
 # ifndef HELP
 #  define HELP 0
 # endif
+
+//SET PRINT TO 0 IF YOU DONT WANT THE MOVEMENTS OF PUSH SWAP TO SHOW AT STDOUT
 
 # define PRINT 1
 
@@ -65,13 +67,6 @@ typedef enum e_states
 # define CYAN_B 		"\033[0;96;5m"
 # define WHITE 			"\033[0;97m"
 # define WHITE_B 		"\033[0;97;5m"
-
-//------------------------------------MSG-------------------------------------//
-
-# define MSG_HELP_ARG1 	"You can either pass one argument or many"
-# define MSG_HELP_ARG2 	"Input format: ./push_swap 'number mumber number'"
-# define MSG_HELP_ARG3 	"Input format: ./push_swap number number number"
-# define MSG_4 			""
 
 //----------------------------------ERRORS------------------------------------//
 
@@ -115,36 +110,54 @@ typedef struct s_move
 	int				rrr;
 }					t_move;
 
-typedef struct s_moves
-{
-	t_move			moves_a;
-	t_move			moves_b;
-	t_move			moves;
-	int				cost;
-}					t_moves;
-
 typedef struct s_blist
 {
 	int				index;
 	int				num;
-	t_moves			moves;
+	int				cost;
+	t_move			moves;
 	struct s_blist	*prev;
 	struct s_blist	*next;
 }					t_blist;
 
 //---------------------------------FUNCTIONS----------------------------------//
 
-int			msg(int code);
+void		free_stacks(t_blist **stack_a, t_blist **stack_b);
+void		free_and_exit(t_blist **s_a, t_blist **s_b, char *move);
+void		arg_handler(int argc, char **argv, t_automata *a, t_blist **stack);
 void		terminate(char *error_msg);
 int			is_it_ordered(t_blist *blist);
 int			is_it_rev_ordered(t_blist *blist);
 void		stack_checker(t_blist **stack_one);
 
-int    		get_lower_index(t_blist **stack);
-void    	lowest_to_b(t_blist **stack_a, t_blist **stack_b);
+int			get_lower_index(t_blist **stack);
+void		lowest_to_b(t_blist **stack_a, t_blist **stack_b);
+
+void		reset(t_blist	**a);
+void		do_moves_pb(t_blist **a, t_blist **b, t_move	moves);
+void		move_to_b(t_blist	**a, t_blist **b, int index);
+int			get_cheapest_index(t_blist *a);
+
+void		join_moves(t_blist **a, t_blist **b);
+void		check_cost_a_to_b(t_blist **a, t_blist **b, int index);
+int			check_index_a_to_b(t_blist **stack_a, t_blist **stack_b, int size);
+void		get_moves_a_to_b(t_blist **a, t_blist **b);
+void		get_moves_b(t_blist **b);
+
+void		get_moves_a(t_blist **a);
+int			get_cheapest_a_to_b(t_blist	**a, t_blist	**b);
+int			is_max_first(t_blist	**stack);
+int			is_max_above(t_blist	**stack);
+void		order(t_blist **a);
+
+int			get_last_num(t_blist *s);
+int			get_smoler_num(t_blist *s);
+int			get_smoler_index(t_blist *s);
+int			get_bigger_num(t_blist *s);
+void		do_moves_pa(t_blist **a, t_blist **b, t_move moves);
 
 void		sort_three(t_blist **stack_a);
-void    	sort_four_five(t_blist   **stack_a, t_blist  **stack_b, int size);
+void		sort_four_five(t_blist	**stack_a, t_blist **stack_b, int size);
 void		sort_stack(t_blist	**stack_a, t_blist	**stack_b, int size);
 
 int			sa_mov(t_blist	**stack_a, int print);
@@ -171,14 +184,14 @@ t_blist		*ft_blstnew(int num, int index);
 
 //--------------------------------AUTOMATA_FT---------------------------------//
 
-void			alphabet_init(t_automata *a);
-void			sactions_init(t_automata *a);
-void			tactions_init(t_automata *a);
-void			parsing_error(t_automata *a, void *data);
-void			getnum(t_automata *a, void *data);
-void			automata_init(t_automata *a, void *data);
-void			negative_alone(t_automata *a, void *data);
-int				get_state(int i, int j);
-void			free_alphabet(t_automata *a);
+void		alphabet_init(t_automata *a);
+void		sactions_init(t_automata *a);
+void		tactions_init(t_automata *a);
+void		parsing_error(t_automata *a, void *data);
+void		getnum(t_automata *a, void *data);
+void		automata_init(t_automata *a, void *data);
+void		negative_alone(t_automata *a, void *data);
+int			get_state(int i, int j);
+void		free_alphabet(t_automata *a);
 
 #endif

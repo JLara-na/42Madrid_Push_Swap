@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jlara-na <jlara-na@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/23 19:46:33 by jlara-na          #+#    #+#             */
-/*   Updated: 2024/03/26 00:15:54 by jlara-na         ###   ########.fr       */
+/*   Created: 2024/03/25 21:15:55 by jlara-na          #+#    #+#             */
+/*   Updated: 2024/03/26 00:45:58 by jlara-na         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,62 @@
 /*
 static void	leak(void)
 {
-	system("leaks -q push_swap");
+	system("leaks -q checker");
 }
-atexit(leak);
+//atexit(leak);
 */
 
 void	terminate(char *error_msg)
 {
-	ft_putstr_fd(RED, 2);
-	ft_putendl_fd(error_msg, 2);
-	ft_putstr_fd(DEF_COLOR, 2);
+	(void)error_msg;
 	ft_putendl_fd("Error", 2);
 	exit(EXIT_SUCCESS);
+}
+
+void	do_move(t_blist **s_a, t_blist **s_b, char *move)
+{
+	if (!ft_strncmp(move, "ra\n", 3))
+		ra_mov(s_a, 0);
+	else if (!ft_strncmp(move, "rb\n", 3))
+		rb_mov(s_b, 0);
+	else if (!ft_strncmp(move, "rr\n", 3))
+		rr_mov(s_a, s_b, 0);
+	else if (!ft_strncmp(move, "rra\n", 4))
+		rra_mov(s_a, 0);
+	else if (!ft_strncmp(move, "rrb\n", 4))
+		rrb_mov(s_b, 0);
+	else if (!ft_strncmp(move, "rrr\n", 4))
+		rrr_mov(s_a, s_b, 0);
+	else if (!ft_strncmp(move, "sa\n", 3))
+		sa_mov(s_a, 0);
+	else if (!ft_strncmp(move, "sb\n", 3))
+		sb_mov(s_b, 0);
+	else if (!ft_strncmp(move, "ss\n", 3))
+		ss_mov(s_a, s_b, 0);
+	else if (!ft_strncmp(move, "pa\n", 3))
+		pa_mov(s_a, s_b, 0);
+	else if (!ft_strncmp(move, "pb\n", 3))
+		pb_mov(s_a, s_b, 0);
+	else
+		free_and_exit(s_a, s_b, move);
+}
+
+void	do_moves(t_blist **s_a, t_blist **s_b)
+{
+	char	*move;
+
+	while (TRUE)
+	{
+		move = get_next_line(0);
+		if (move == NULL)
+			break ;
+		do_move(s_a, s_b, move);
+		free(move);
+	}
+	if (is_it_ordered(*s_a) && ft_blstsize(*s_b) == 0)
+		ft_putendl_fd("OK", 1);
+	else
+		ft_putendl_fd("KO", 1);
 }
 
 void	arg_handler(int argc, char **argv, t_automata *a, t_blist **stack)
@@ -49,25 +93,6 @@ void	arg_handler(int argc, char **argv, t_automata *a, t_blist **stack)
 	free_alphabet(a);
 }
 
-void	free_stacks(t_blist **stack_a, t_blist **stack_b)
-{
-	t_blist	*a;
-	t_blist	*b;
-
-	a = *stack_a;
-	b = *stack_b;
-	while (a)
-	{
-		free(a);
-		a = a->next;
-	}
-	while (b)
-	{
-		free(b);
-		b = b->next;
-	}
-}
-
 int	main(int argc, char **argv)
 {
 	t_automata	a;
@@ -79,7 +104,7 @@ int	main(int argc, char **argv)
 	automata_init(&a, &stack_a);
 	arg_handler(argc, argv, &a, &stack_a);
 	stack_checker(&stack_a);
-	sort_stack(&stack_a, &stack_b, ft_blstsize(stack_a));
+	do_moves(&stack_a, &stack_b);
 	free_stacks(&stack_a, &stack_b);
-	return (1);
+	return (EXIT_SUCCESS);
 }
